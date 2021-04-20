@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#
 #include <iostream>
 
 /*
@@ -48,7 +48,7 @@ int main() {
 	//creamos nuestra ventana
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Atole", NULL, NULL);
 	if (window == NULL) {
-		std::cout << "Fallo en crear GLFW y la venta, ni pepe." << std::endl;
+		std::cout << "Fallo en crear GLFW y la ventana, ni pepe." << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -215,7 +215,7 @@ int main() {
 	};
 	*/
 
-	/*
+	/*//Letra F
 	float vertices[]{
 		0.1f, 0.5f, 0.0f, 1.0, 0.0f, 0.0f, //0
 		0.1f, -0.5f, 0.0f, 0.0, 0.0f, 0.0f, //1
@@ -240,6 +240,7 @@ int main() {
 	};
 	*/
 
+	/*//Polígono
 	float vertices[] {
 		0.0f, 1.0f, 0.0f, 0.3, 0.0f, 0.1f, //Arriba - Medio
 		-0.5f, 0.5f, 0.0f, 1.0, 0.0f, 7.0f, //Arribita - Izquierda
@@ -254,6 +255,207 @@ int main() {
 		1, 2, 4,
 		1, 4, 5,
 		2, 3, 4,
+	};
+	*/
+	
+	/*
+	//Castillo
+	float vertices[]{
+		//Cuadro
+		   -0.95f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //Arribita Izq - 0
+		   0.95f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //Arribita Derecha - 1
+		   -0.95f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, //Abajo - Izquierda - 2
+		   0.95f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, //Abajo - Derecha - 3
+		   //Decoración piquitos
+			   //Coordenadas de abajo:
+		   -0.72f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //4
+		   -0.44f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //5
+		   -0.15f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //6
+		   0.15f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //7
+		   0.44f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //8
+		   0.72f, 0.5f, 0.0f, 0.5f, 0.27f, 0.2f, //9
+
+		   //Coordenadas de arriba:
+		   -0.95f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //10
+		   -0.72f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //11
+		   -0.44f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //12
+		   -0.15f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //13
+		   0.15f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //14
+		   0.44f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //15
+		   0.72f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //16
+		   0.95f, 0.85f, 0.0f, 0.0f, 0.0f, 0.0f, //17
+
+		   //Ventanas
+		   -0.72f, 0.25f, 0.0f, 0.2f, 0.1f, 0.1f, //18
+			-0.72f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //19
+			-0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //20
+			-0.15f, 0.25f, 0.0f, 0.2f, 0.1f, 0.1f, //21
+
+			0.72f, 0.25f, 0.0f, 0.2f, 0.1f, 0.1f, //22
+			0.72f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //23
+			0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //24
+			0.15f, 0.25f, 0.0f, 0.2f, 0.1f, 0.1f, //25
+
+			-0.44f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //26
+			-0.44f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  //27
+			0.44f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, //28
+			0.44f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //29
+	};
+
+	unsigned int indices[]{
+		3, 1, 0, 2, 3, 0, //Cuadro grande
+
+		0, 4, 10, 4, 11, 10, // //Piquito 1
+		5, 6, 12, 6, 13, 12,  //Piquito 2
+		7, 8, 14, 8, 15, 14,  //Piquito 3
+		9, 1, 16, 1, 17, 16,  //Piquito 4
+
+		18, 19, 20, 18, 20, 21, //Ventana Izq
+		22, 23, 24, 22, 24, 25, //Ventana Der
+		26, 27, 28, 26, 28, 29, //Puerta
+	};
+	*/
+
+	/*
+	//Pato feo
+	float vertices[]{
+		0.0f, 0.7f, 0.0f, 0.0f, 0.0f, 0.0f, //0 A
+		0.2f, 0.7f, 0.0f, 0.0f, 0.0f, 0.0f, //1 B
+		0.4f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //2 C
+		0.1f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //3 D
+		0.1f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, //4 E
+		0.3f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //5 F
+		0.3f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //6 G
+		0.0f, -0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //7 H
+		0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //8 I
+		0.2f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //9 J
+		0.1f, -0.6f, 0.0f, 0.0f, 0.0f, 0.0f, //10 K
+		-0.3f, -0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //11 L
+		-0.3f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //12 M
+		-0.1f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //13 N
+		-0.2f, -0.6f, 0.0f, 0.0f, 0.0f, 0.0f, //14 O
+		-0.6f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //15 P
+		-0.4f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //16 Q
+		-0.2f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //17 R
+		0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //18 S
+		-0.1f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, //19 T
+		-0.1f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //20 U
+	};
+
+	unsigned int indices[]{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 9, 8, 7,
+		11, 12, 14, 13, 12, 11, 15, 16, 17, 18, 19, 20, 0
+	};
+	*/
+	
+	//Pato feo
+	float vertices[]{
+		//Tríangulo imposible
+		-0.1f, 0.8f, 0.0f, 0.8f, 0.8f, 0.2f, //0
+		0.1f, 0.8f, 0.0f, 0.8f, 0.8f, 0.8f, //1
+		0.7f, -0.4f, 0.0f, 0.9f, 0.5f, 0.7f, //2
+		0.6f, -0.6f, 0.0f, 0.1f, 0.6f, 0.1f, //3
+		-0.6f, -0.6f, 0.0f, 0.8f, 0.5f, 0.2f, //4
+		-0.7f, -0.4f, 0.0f, 0.5f, 0.2f, 0.5f, //5
+		-0.1f, 0.4f, 0.0f, 0.1f, 0.1f, 0.2f, //6
+		0.4f, -0.2f, 0.0f, 0.2f, 0.6f, 0.8f, //7
+		-0.3f, -0.4f, 0.0f, 0.2f, 0.3f, 0.7f, //8
+		0.0f, 0.2f, 0.0f, 0.2f, 0.2f, 0.1f, //9
+		0.2f, -0.2f, 0.0f, 0.0f, 0.1f, 0.0f, //10
+		-0.2f, -0.2f, 0.0f, 0.1f, 0.0f, 0.0f, //11
+
+		//Triángulos de fondo
+		-1.0f, 1.0f, 0.0f, 0.2f, 0.6f, 0.3f, //12 - Sup izq
+		-0.8f, 1.0f, 0.0f, 0.6f, 0.0f, 0.3f, //13
+		-0.6f, 1.0f, 0.0f, 0.1f, 0.0f, 0.9f, //14
+		-0.4f, 1.0f, 0.0f, 0.6f, 0.6f, 0.3f, //15
+		-0.2f, 1.0f, 0.0f, 0.1f, 0.0f, 0.2f, //16
+		0.2f, 1.0f, 0.0f, 0.5f, 0.0f, 0.6f, //17
+		0.4f, 1.0f, 0.0f, 0.2f, 0.2f, 0.0f, //18
+		0.6f, 1.0f, 0.0f, 0.1f, 0.0f, 0.0f, //19
+		0.8f, 1.0f, 0.0f, 0.4f, 0.2f, 0.8f, //20
+		1.0f, 1.0f, 0.0f, 0.1f, 0.1f, 0.5f, //21 - Sup der
+		-1.0f, 0.8f, 0.0f, 0.0f, 0.8f, 0.2f, //22 
+		-3.0f, 0.8f, 0.0f, 0.6f, 0.6f, 0.2f, //23 
+		3.0f, 0.8f, 0.0f, 0.2f, 0.0f, 0.8f, //24
+		1.0f, 0.8f, 0.0f, 0.1f, 0.9f, 0.9f, //25
+		-1.0f, 0.6f, 0.0f, 0.0f, 0.4f, 0.4f, //26
+		-0.4f, 0.6f, 0.0f, 0.8f, 0.0f, 0.0f, //27
+		0.4f, 0.6f, 0.0f, 0.2f, 0.9f, 0.1f, //28
+		1.0f, 0.6f, 0.0f, 0.2f, 0.1f, 0.0f, //29
+		-1.0f, 0.4f, 0.0f, 0.5f, 0.5f, 0.0f, //30
+		-5.0f, 0.4f, 0.0f, 0.8f, 0.6f, 0.0f, //31
+		5.0f, 0.4f, 0.0f, 0.2f, 0.5f, 0.2f, //32
+		1.0f, 0.4f, 0.0f, 0.5f, 0.0f, 0.1f, //33
+		-1.0f, 0.2f, 0.0f, 0.9f, 0.2f, 0.0f, //34
+		-0.6f, 0.2f, 0.0f, 0.9f, 0.0f, 0.3f, //35
+		0.6f, 0.2f, 0.0f, 0.0f, 0.7f, 0.0f, //36
+		1.0f, 0.2f, 0.0f, 0.0f, 0.1f, 0.8f, //37
+		-1.0f, 0.0f, 0.0f, 0.1f, 0.2f, 0.6f, //38
+		-0.7f, 0.0f, 0.0f, 0.2f, 0.3f, 0.0f, //39
+		0.7f, 0.0f, 0.0f, 0.3f, 0.0f, 0.1f, //40
+		1.0f, 0.0f, 0.0f, 0.1f, 0.2f, 0.0f, //41
+		-1.0f, -0.2f, 0.0f, 0.0f, 0.5f, 0.8f, //42
+		-0.8f, -0.2f, 0.0f, 0.1f, 0.0f, 0.3f, //43
+		0.8f, -0.2f, 0.0f, 0.2f, 0.6f, 0.2f, //44
+		1.0f, -0.2f, 0.0f, 0.0f, 0.2f, 0.9f, //45
+		-1.0f, -0.4f, 0.0f, 0.1f, 0.1f, 0.1f, //46
+		-0.9f, -0.4f, 0.0f, 0.2f, 0.0f, 0.7f, //47
+		0.9f, -0.4f, 0.0f, 0.0f, 0.7f, 0.0f, //48
+		1.0f, -0.4f, 0.0f, 0.8f, 0.2f, 0.0f, //49
+		-1.0f, -0.6f, 0.0f, 1.0f, 0.0f, 0.5f, //50
+		-0.8f, -0.6f, 0.0f, 0.3f, 0.8f, 0.8f, //51
+		0.8f, -0.6f, 0.0f, 0.1f, 0.1f, 0.1f, //52
+		1.0f, -0.6f, 0.0f, 0.2f, 0.8f, 0.2f, //53
+		-1.0f, -0.8f, 0.0f, 0.7f, 0.2f, 0.8f, //54
+		-6.0f, -0.8f, 0.0f, 0.6f, 0.2f, 0.1f, //55
+		-4.0f, -0.8f, 0.0f, 0.4f, 0.2f, 0.8f, //56
+		-2.0f, -0.8f, 0.0f, 0.7f, 0.3f, 0.3f, //57
+		0.0f, -0.8f, 0.0f, 0.2f, 0.1f, 0.0f, //58
+		2.0f, -0.8f, 0.0f, 0.5f, 0.0f, 0.2f, //59
+		4.0f, -0.8f, 0.0f, 0.0f, 0.2f, 0.3f, //60
+		6.0f, -0.8f, 0.0f, 0.2f, 0.0f, 0.3f, //61
+		1.0f, -0.8f, 0.0f, 0.1f, 0.0f, 0.9f, //62
+		-1.0f, -1.0f, 0.0f, 0.1f, 0.4f, 0.0f, //64 - Inf izq
+		-0.8f, -1.0f, 0.0f, 0.2f, 0.2f, 0.5f, //65
+		-0.6f, -1.0f, 0.0f, 0.4f, 0.0f, 0.1f, //66
+		-0.4f, -1.0f, 0.0f, 0.2f, 0.0f, 0.0f, //67
+		-0.2f, -1.0f, 0.0f, 0.0f, 0.4f, 0.0f, //68
+		0.2f, -1.0f, 0.0f, 0.54f, 0.0f, 0.7f, //69
+		0.4f, -1.0f, 0.0f, 0.0f, 0.9f, 0.2f, //70
+		0.6f, -1.0f, 0.0f, 0.8f, 0.4f, 0.0f, //71
+		0.8f, -1.0f, 0.0f, 1.0f, 0.6f, 0.3f, //72
+		1.0f, -1.0f, 0.0f, 0.6f, 0.8f, 0.9f, //73 - Inf der
+
+	};
+
+	unsigned int indices[]{
+		//Triángulo imposible
+		0, 5, 4,
+		0, 4, 6,
+		0, 6, 10,
+		0, 10, 7,
+
+		6, 4, 9,
+		9, 4, 8,
+		8, 4, 3,
+		8, 3, 2,
+
+		0, 7, 1,
+		1, 7, 2,
+		11, 8, 2,
+		11, 2, 7,
+
+		//Background
+		46, 50, 47,
+		42, 46, 47,
+		42, 47, 43,
+		38, 42, 43,
+		38, 43, 39,
+		34, 38, 39,
+		30, 34, 35,
+		30, 35, 31,
+		26, 30, 31
 	};
 
 	unsigned int VBO, VAO, EBO; //Vertex Buffer Object, Vertex Array Object, Extended Buffer Object
@@ -277,40 +479,42 @@ int main() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	
+
 	//Vincular la característica
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//Indicar que son posiciones
 	//glBindVertexArray(VAO);
 
-	glUseProgram(shaderProgram);
-	//glBindVertexArray(VAO); //Esto va en el bucle para colores fijos, afuera 
+	glBindVertexArray(VAO); //Esto va en el bucle para colores fijos, afuera para los cambiantes
+	/*glUseProgram(shaderProgram);
 	float timeValue = glfwGetTime();
 	float senalVerde = sin(timeValue) / 2.0f + 0.5f;
 	int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-	glUniform4f(vertexColorLocation, 0.0f, senalVerde, 0.0f, 1.0f);
+	glUniform4f(vertexColorLocation, 0.0f, senalVerde, 0.0f, 1.0f);*/
 
 	//Loop para que se pueda visualizar nuestra pantalla
 	while (!glfwWindowShouldClose(window)) {
 		ProcessInput(window);
 
 		//Renderizado
-		glClearColor(0.2f, 0.4f, 0.6f, 1.0f);
+		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/*
+		
 		//Dibujar primer cuadro
 		glUseProgram(shaderProgram);
-		//glBindVertexArray(VAO); //Esto va en el bucle para colores fijos, afuera 
+
 		float timeValue = glfwGetTime();
 		float senalVerde = sin(timeValue) / 2.0f + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, senalVerde, 0.0f, 1.0f);
-		*/
-		glBindVertexArray(VAO);
+		
+		//glBindVertexArray(VAO); //Esto va en el bucle para colores fijos, afuera
 
 		//glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 
-		glDrawElements(GL_TRIANGLES, 55, GL_UNSIGNED_INT, 0); //El segundo parámetro dice cuántos elementos tiene
+		glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0); //El segundo parámetro dice cuántos elementos tiene
 
 		//Detectar eventos de IO
 		glfwSwapBuffers(window);

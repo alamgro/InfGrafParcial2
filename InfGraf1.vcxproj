@@ -145,6 +145,13 @@
     <ClCompile Include="..\..\glfw\src\glad.c" />
     <ClCompile Include="InfGraf1.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\glfw\include\shader\shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Texturas.fs" />
+    <None Include="Texturas.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
