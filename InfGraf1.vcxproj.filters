@@ -34,5 +34,19 @@
     <None Include="Texturas.fs">
       <Filter>Archivos de origen</Filter>
     </None>
+    <None Include="Vertex2.vs">
+      <Filter>Archivos de origen</Filter>
+    </None>
+    <None Include="Vertex2.fs">
+      <Filter>Archivos de origen</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\Bocadito\Downloads\cosa2.jpg">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="C:\Users\Bocadito\Downloads\cosa1.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
   </ItemGroup>
 </Project>

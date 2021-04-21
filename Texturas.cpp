@@ -44,6 +44,7 @@ int main() {
 	}
 
 	Shader miShader("Texturas.vs", "Texturas.fs");
+	Shader miShader2("Vertex2.vs", "Vertex2.fs");
 
 	float vertices[]{
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -61,6 +62,17 @@ int main() {
 		//1, 2, 3
 
 		0, 1, 2, 3
+	};
+
+	float triangulos[]{
+		 0.5f,  0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+	};
+
+	unsigned int indicesTriangulo[]
+	{
+		0, 1, 2,
 	};
 
 	unsigned int VBO, VAO, EBO; //Vertex Buffer Object, Vertex Array Object y Extendet Array Object
@@ -85,6 +97,79 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+#pragma region Segunda figura
+	unsigned int VBO2, VAO2, EBO2; //Vertex Buffer Object, Vertex Array Object y Extendet Array Object
+	glGenVertexArrays(1, &VAO2);
+	glGenBuffers(1, &VBO2);
+	glGenBuffers(1, &EBO2);
+	//unir o linkear
+	glBindVertexArray(VAO2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangulos), triangulos, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesTriangulo), indicesTriangulo, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(VAO);
+
+#pragma endregion
+
+#pragma region CARGAR TEXTURAS	
+	unsigned textura1, textura2;
+	//Primera textura
+	glGenTextures(1, &textura1);
+	glBindTexture(GL_TEXTURE_2D, textura1);
+	//Configurar comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//Configuramos el filtrado de la textura en caso de que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//Cargar la imagen, crear la textura y generar los mipmaps
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	//Cargar nuestra textura
+	unsigned char* data = stbi_load("cosa2.jpg", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "Fallo en cargar la primera textura" << std::endl;
+	}
+	stbi_image_free(data);
+
+	//Segunda textura
+	glGenTextures(1, &textura2);
+	glBindTexture(GL_TEXTURE_2D, textura2);
+	//Configurar comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//Configuramos el filtrado de la textura en caso de que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Cargar nuestra textura
+	unsigned char* data = stbi_load("cosa1.png", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "Fallo en cargar la primera textura" << std::endl;
+	}
+	stbi_image_free(data);
+
+	miShader.use();
+	miShader.setInt("textura1", 0);
+	miShader.setInt("textura2", 1);
+
+#pragma endregion
+
 	//loop para que se pueda visualizar nuestra pantalla
 	while (!glfwWindowShouldClose(window))
 	{
@@ -95,9 +180,13 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//dibujamos nuestro primer cuadrado
-		glUseProgram(shaderPorgram);
-		glBindVertexArray(VAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textura1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textura2);
 
+		miShader.use();
+		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, 0);
 
 		//detecte eventos de IO

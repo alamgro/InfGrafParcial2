@@ -151,6 +151,12 @@
   <ItemGroup>
     <None Include="Texturas.fs" />
     <None Include="Texturas.vs" />
+    <None Include="Vertex2.fs" />
+    <None Include="Vertex2.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\Bocadito\Downloads\cosa1.png" />
+    <Image Include="C:\Users\Bocadito\Downloads\cosa2.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
