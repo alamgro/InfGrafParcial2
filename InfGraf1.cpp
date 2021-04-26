@@ -3,7 +3,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#
+
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 /*
@@ -12,10 +14,12 @@
 
 void FrameBuffer_size_callback(GLFWwindow* _window, int _width, int _height); //Aquí se almacena nuestra ventana, lienzo
 void ProcessInput(GLFWwindow* _window);
+void IncreaseNumRandomly(float& _num);
 
 //Medidas de la pantalla
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
+
 
 const char* VertexShaderSource = "#version 330 core \n"
 	"layout (location = 0) in vec3 aPos; \n"
@@ -33,7 +37,13 @@ const char* FragmentShaderSource = "#version 330 core\n"
 	"void main()\n" "{\n"
 	" FragColor = vec4(ourColor, 1.0f);\n" "}\n\0";
 
-int main() {
+int main() 
+{
+	srand((unsigned)time(0));
+	float colorsCounter[3];
+	for (int i = 0; i < 3; i++) {
+		colorsCounter[i] = 0.0f;
+	}
 	//inicializar GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -545,8 +555,12 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		ProcessInput(window);
 
+		IncreaseNumRandomly(colorsCounter[0]);
+		
+		IncreaseNumRandomly(colorsCounter[2]);
+		
 		//Renderizado
-		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		glClearColor(colorsCounter[0], 0.7f, colorsCounter[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		
@@ -578,6 +592,14 @@ int main() {
 	glfwTerminate();
 	return 0;
 
+}
+
+
+void IncreaseNumRandomly(float& _num) {
+	_num += ((rand() % 10)) / 1000.0f;
+	if (_num > 0.9f) {
+		_num = 0.0f;
+	}
 }
 
 void FrameBuffer_size_callback(GLFWwindow* _window, int _width, int _height) {
