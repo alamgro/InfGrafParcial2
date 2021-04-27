@@ -119,7 +119,7 @@ int main() {
 #pragma endregion
 
 #pragma region CARGAR TEXTURAS	
-	unsigned textura1, textura2;
+	unsigned int textura1, textura2;
 	//Primera textura
 	glGenTextures(1, &textura1);
 	glBindTexture(GL_TEXTURE_2D, textura1);
@@ -154,13 +154,13 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Cargar nuestra textura
-	unsigned char* data = stbi_load("cosa1.png", &width, &height, &nrChannels, 0);
+	data = stbi_load("cosa1.png", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "Fallo en cargar la primera textura" << std::endl;
+		std::cout << "Fallo en cargar la segunda textura" << std::endl;
 	}
 	stbi_image_free(data);
 

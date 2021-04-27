@@ -143,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\glfw\src\glad.c" />
-    <ClCompile Include="InfGraf1.cpp" />
+    <ClCompile Include="Texturas.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\glfw\include\shader\shader.h" />
@@ -155,8 +155,8 @@
     <None Include="Vertex2.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\Bocadito\Downloads\cosa1.png" />
-    <Image Include="C:\Users\Bocadito\Downloads\cosa2.jpg" />
+    <Image Include="cosa1.png" />
+    <Image Include="cosa2.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
