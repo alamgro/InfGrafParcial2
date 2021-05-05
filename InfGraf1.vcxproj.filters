@@ -18,7 +18,7 @@
     <ClCompile Include="..\..\glfw\src\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="Texturas.cpp">
+    <ClCompile Include="texturitas.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,6 +46,15 @@
       <Filter>Archivos de recursos</Filter>
     </Image>
     <Image Include="cosa2.jpg">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="Background.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="Background2.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="Alam.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
   </ItemGroup>
