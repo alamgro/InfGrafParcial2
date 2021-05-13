@@ -3,22 +3,39 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include <glm/glm.hpp> //Operaciones avanzadas
-#include <glm/gtc/matrix_transform.hpp> //Transformaciones matriciales
-#include <glm/gtc/type_ptr.hpp> //Transformación de tipos de datos
+#include <glm/glm.hpp> //operaciones avanzadas
+#include <glm/gtc/matrix_transform.hpp> //transformaciones matriciales
+#include <glm/gtc/type_ptr.hpp> //transformaciones de tipos de datos
 
 #include <shader/shader.h>
+#include <camara/camara.h>
 
 #include <iostream>
+using namespace glm;
 
+void Instantiate(Shader& _shader, vec3 _position);
+void Instantiate(Shader& _shader, vec3 _position, vec3 _scale);
+void Instantiate(Shader& _shader, vec3 _position, float _angle, vec3 _axis);
+void Instantiate(Shader& _shader, vec3 _position, vec3 _scale, float _angle, vec3 _axis);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height); //almacenar nuestra ventana y configs
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void processInput(GLFWwindow* window); //acciones para nuestra ventana
 
 //medidas de la pantalla
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
 
-using namespace glm;
+//Cámara
+Camara camera(vec3(0.0f, 0.0f, 3.0f));
+float lastX = WIDTH / 2.0f;
+float lastY = HEIGHT / 2.0f;
+bool firstMouse = true;
+
+//Timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 
 int main() {
 	//inicializar glfw
@@ -41,6 +58,11 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+
+	//DECIRLE a glfw que va recibir señales del mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//comprobar que glad se este corriendo o se haya inicializado correctamente
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -49,75 +71,65 @@ int main() {
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST); //Esto es para evitar la sobreposición de las figuras
+
 	Shader nuestroShader("Texturas.vs", "Texturas.fs");
 	Shader segundoShader("Vertex2.vs", "Vertex2.fs");
 
 	float vertices[]{
-		   //posiciones			//colores			//texturas
-		 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		//posiciones			//colores			//texturas
+	 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	  0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
 	float triangulos[] = {
-		/*-1.0f, 1.0f, 0.0f, // top left
-		-1.0f, 0.5f, 0.0f, // bottom left
-		0.5f, -0.5f, 0.0f, // bottom right
-		0.5f,  1.0f, 0.0f, // top right*/
-		//Cordenadas de frente
-		0.5f, 0.5f, 0.0f, //0 - Arriba - Derecha
-		-0.5f, 0.5f, 0.0f, //1 - Arriba - Izquierda
-		-0.5f, -0.5f, 0.0f, //2 - Abajo - Izquierda
-		0.5f, -0.5f, 0.0f, //3 - Abajo - Derecha
-
-		//Cordenadas de atrás
-		0.5f, 0.5f, -1.0f, //4 - Arriba - Derecha
-		-0.5f, 0.5f, -1.0f, //5 - Arriba - Izquierda
-		-0.5f, -0.5f, -1.0f, //6 - Abajo - Izquierda
-		0.5f, -0.5f, -1.0f //7 - Abajo - Derecha
+		 0.5f, -0.5f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f,  // bottom left
+		 0.0f,  0.5f, 0.0f   // top 
 	};
 
 	unsigned int indices[]
 	{
-		0, 1, 2,
+		 0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 10, 11,
@@ -132,8 +144,22 @@ int main() {
 	};
 	unsigned int indicestriangulo[]
 	{
-		1
+		0, 1, 2
 	};
+
+	vec3 posicionesCubo[] = {
+		vec3(0.0f,  0.0f,  0.0f),
+		vec3(2.0f,  5.0f, -15.0f),
+		vec3(-1.5f, -2.2f, -2.5f),
+		vec3(-3.8f, -2.0f, -12.3f),
+		vec3(2.4f, -0.4f, -3.5f),
+		vec3(-1.7f,  3.0f, -7.5f),
+		vec3(1.3f, -2.0f, -2.5f),
+		vec3(1.5f,  2.0f, -2.5f),
+		vec3(1.5f,  0.2f, -1.5f),
+		vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 
 	//---------------primer vertex-----------------------
 
@@ -152,9 +178,6 @@ int main() {
 	//posiciones
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	//colores
-	/*glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);*/
 	//texturas
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
@@ -200,10 +223,10 @@ int main() {
 	}
 	else
 	{
-		std::cout << "Fallo al cargar la primera textura" << std::endl;
+		std::cout << "fallaste en cargar la primera textura" << std::endl;
 	}
 	stbi_image_free(data);
-	
+
 	//Textura2
 	glGenTextures(1, &textura2);
 	glBindTexture(GL_TEXTURE_2D, textura2);
@@ -214,7 +237,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//cargar nuestra textura
-	data = stbi_load("Background.png", &width, &height, &nrChannels, 0);
+	data = stbi_load("cosa1.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -222,7 +245,7 @@ int main() {
 	}
 	else
 	{
-		std::cout << "Fallo al cargar la segunda textura" << std::endl;
+		std::cout << "fallaste en cargar la segunda textura" << std::endl;
 	}
 	stbi_image_free(data);
 
@@ -234,11 +257,14 @@ int main() {
 	//loop para que se pueda visualizar nuestra pantalla
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		processInput(window);
 
 		//Renderizado
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.2f, 0.4f, 0.6f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //LIMPIEZA DEL BUFFER Z
 
 		//activado  y union de las texturas
 		glActiveTexture(GL_TEXTURE0);
@@ -246,33 +272,58 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textura2);
 
-		mat4 transform = mat4(1.0f);
-		//transform = translate(transform, vec3(0.0f, 0.0f, 0.0f));
-		transform = rotate(transform, (float)glfwGetTime(), vec3(0.0f, 1.0f, 1.0f));
-		//transform = scale(transform, vec3(3.5f, 3.0f, 3.0f));
+		//transformaciones
+		/*mat4 transform = mat4(1.0f); //inicializamos con una matriz identidad
+		transform = translate(transform, vec3(0.3f, -0.5f, 0.0f));
+		transform = rotate(transform, (float)glfwGetTime(), vec3(0.0f, 1.0f, 1.0f));*/
 
 		nuestroShader.use();
 
-		unsigned int transformLoc = glGetUniformLocation(nuestroShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, value_ptr(transform));
+		//MVP
+		/*mat4 view = mat4(1.0f);
+		mat4 projection = mat4(1.0f);
+		projection = perspective(radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f ); //SE maneja en radianes para mayor exactitud
+		view = translate(view, vec3(0.0f, 0.0f, -3.0f));*/
+
+		mat4 projection = perspective(radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+		mat4 view = camera.GetViewMatrix();
+
+
+		nuestroShader.setMat4("projection", projection);
+		nuestroShader.setMat4("view", view);
+
+		/*unsigned int transformLoc = glGetUniformLocation(nuestroShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, value_ptr(transform));*/
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 60, GL_UNSIGNED_INT, 0);
+		/*for (unsigned int i = 0; i < 10; i++)
+		{
+			mat4 model = mat4(1.0f);
+			model = translate(model, posicionesCubo[i]);
+			float angulos = (float)glfwGetTime() * (i + 1);
+			model = rotate(model, radians(angulos), vec3(1.0f, 0.3f, 0.5f));
+			nuestroShader.setMat4("model", model);
+			glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+		}*/
+
+		Instantiate(nuestroShader, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f));
+
 
 		mat4 transform2 = mat4(1.0f);
-		transform2 = translate(transform2, vec3(3.0f, 0.0f, 0.0f));
-		//transform2 = rotate(transform2, (float)glfwGetTime(), vec3(0.0f, 1.0f, -1.0f));
-		//transform2 = scale(transform2, vec3(0.5f, 1.0f, 1.0f));
+		transform2 = translate(transform2, vec3(-0.3f, 0.5f, 0.0f));
+		transform2 = rotate(transform2, ((float)glfwGetTime() * -1) * 5, vec3(1.0f, 1.0f, 1.0f));
+		transform2 = scale(transform2, vec3(0.5, 0.5, 0.5));
 
 		segundoShader.use();
 
-		unsigned int transformLoc2 = glGetUniformLocation(segundoShader.ID, "transform2");
+
+		unsigned int transformLoc2 = glGetUniformLocation(segundoShader.ID, "transform");
 		glUniformMatrix4fv(transformLoc2, 1, GL_FALSE, value_ptr(transform2));
-		
+
 		float colorverde = sin(glfwGetTime()) / 2.0f + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(segundoShader.ID, "nuestroColor");
 		glUniform4f(vertexColorLocation, 0.0f, colorverde, 0.0f, 1.0f);
-		glDrawElements(GL_TRIANGLES, 10, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		//detecte eventos de IO
 		glfwSwapBuffers(window);
@@ -285,15 +336,90 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
+//Instancía un cubo, sin rotación.
+void Instantiate(Shader& _shader, vec3 _position)
+{
+	mat4 model = mat4(1.0f);
+	model = translate(model, _position);
+	_shader.setMat4("model", model);
+	glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+}
+
+//Instanciar con una escala
+void Instantiate(Shader& _shader, vec3 _position, vec3 _scale)
+{
+	mat4 model = mat4(1.0f);
+	model = translate(model, _position);
+	model = scale(model, _scale);
+	_shader.setMat4("model", model);
+	glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+}
+
+//Instancia un cubo, con la rotación indicada 
+void Instantiate(Shader& _shader, vec3 _position, float _angle, vec3 _axis)
+{
+	mat4 model = mat4(1.0f);
+	model = translate(model, _position);
+	model = rotate(model, radians(_angle), _axis);
+	_shader.setMat4("model", model);
+	glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+}
+
+//Instancia un cubo, con escala y rotación indicadas 
+void Instantiate(Shader& _shader, vec3 _position, vec3 _scale, float _angle, vec3 _axis)
+{
+	mat4 model = mat4(1.0f);
+	model = translate(model, _position);
+	model = scale(model, _scale);
+	model = rotate(model, radians(_angle), _axis);
+	_shader.setMat4("model", model);
+	glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+}
 
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	//nuestra primera configuracion de la camara
 	glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+{
+	if (firstMouse)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	float xOffset = xPos - lastX;
+	float yOffset = lastY - yPos;
+
+	lastX = xPos;
+	lastY = yPos;
+
+	camera.ProcessMouseMovement(xOffset, yOffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	camera.ProcessMouseScroll(yOffset);
 }

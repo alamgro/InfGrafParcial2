@@ -1,15 +1,13 @@
 #version 330 core
 out vec4 FragColor;
 
-//in vec3 miColor;
-in vec2 miTextura;
+in vec2 nuestrasTexturas;
 
-//Ejemplo de textura
+//ejemplos de texturas
 uniform sampler2D textura1;
 uniform sampler2D textura2;
 
 void main()
 {
-	FragColor = mix(texture(textura1, miTextura), texture(textura2, miTextura), 0.15f);
-	//FragColor = (mix(texture(textura1, miTextura), texture(textura2, miTextura), 0.15) * vec4(miColor, 1.0));
+	FragColor = mix(texture(textura1, nuestrasTexturas), texture(textura2, nuestrasTexturas), 0.0);
 }

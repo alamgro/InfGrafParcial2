@@ -26,6 +26,9 @@
     <ClInclude Include="..\..\glfw\include\shader\shader.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\glfw\include\camara\camara.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Texturas.vs">

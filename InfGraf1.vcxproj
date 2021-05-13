@@ -146,6 +146,7 @@
     <ClCompile Include="texturitas.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\glfw\include\camara\camara.h" />
     <ClInclude Include="..\..\glfw\include\shader\shader.h" />
   </ItemGroup>
   <ItemGroup>
