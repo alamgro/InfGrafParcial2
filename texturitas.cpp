@@ -27,7 +27,7 @@ const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
 
 //Cámara
-Camara camera(vec3(0.0f, 0.0f, 3.0f));
+Camara camera(vec3(0.0f, 5.0f, 10.0f));
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -215,10 +215,11 @@ int main() {
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
 	//cargar nuestra textura
-	unsigned char* data = stbi_load("Alam.png", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("cosa2.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -305,9 +306,18 @@ int main() {
 			nuestroShader.setMat4("model", model);
 			glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
 		}*/
+#pragma region CASA
+		Instantiate(nuestroShader, vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 0.5f, 10.0f)); //Cimientos
+		Instantiate(nuestroShader, vec3(0.0f, 2.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f)); //Cubo Casa
+		Instantiate(nuestroShader, vec3(0.0f, 1.0f, 2.1f), vec3(1.0f, 2.0f, 1.0f)); //Puerta
+		Instantiate(nuestroShader, vec3(-2.1f, 2.0f, 0.0f), vec3(1.0f, 2.0f, 3.0f), 180.0f, vec3(0.0f, 0.0f, 1.0f)); //Ventana izquierda
+		Instantiate(nuestroShader, vec3(2.1f, 2.0f, 0.0f), vec3(1.0f, 2.0f, 3.0f), 180.0f, vec3(0.0f, 0.0f, 1.0f)); //Ventana derecha
+		Instantiate(nuestroShader, vec3(0.0f, 4.0f, 2.1f), vec3(3.0f, 1.0f, 1.0f), 180.0f, vec3(0.0f, 0.0f, 1.0f)); //Ventana frontal
+		Instantiate(nuestroShader, vec3(0.0f, 5.0f, 0.0f), vec3(3.53f, 3.53f, 4.98f), 45.0f, vec3(0.0f, 0.0f, 1.0f)); //Techo
+		Instantiate(nuestroShader, vec3(-1.59f, 6.25f, 0.0f), vec3(5.0f, 0.5f, 4.98f), 45.0f, vec3(0.0f, 0.0f, 1.0f)); //Techo saliente izq
+		Instantiate(nuestroShader, vec3(1.59f, 6.25f, 0.0f), vec3(5.0f, 0.5f, 4.96f), -45.0f, vec3(0.0f, 0.0f, 1.0f)); //Techo saliente izq
 
-		Instantiate(nuestroShader, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f));
-
+#pragma endregion
 
 		mat4 transform2 = mat4(1.0f);
 		transform2 = translate(transform2, vec3(-0.3f, 0.5f, 0.0f));
@@ -315,7 +325,6 @@ int main() {
 		transform2 = scale(transform2, vec3(0.5, 0.5, 0.5));
 
 		segundoShader.use();
-
 
 		unsigned int transformLoc2 = glGetUniformLocation(segundoShader.ID, "transform");
 		glUniformMatrix4fv(transformLoc2, 1, GL_FALSE, value_ptr(transform2));
@@ -370,8 +379,8 @@ void Instantiate(Shader& _shader, vec3 _position, vec3 _scale, float _angle, vec
 {
 	mat4 model = mat4(1.0f);
 	model = translate(model, _position);
-	model = scale(model, _scale);
 	model = rotate(model, radians(_angle), _axis);
+	model = scale(model, _scale);
 	_shader.setMat4("model", model);
 	glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
 }

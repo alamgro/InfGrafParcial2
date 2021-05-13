@@ -159,6 +159,7 @@
     <Image Include="Alam.png" />
     <Image Include="Background.png" />
     <Image Include="Background2.png" />
+    <Image Include="Bricks.jpg" />
     <Image Include="cosa1.png" />
     <Image Include="cosa2.jpg" />
   </ItemGroup>
