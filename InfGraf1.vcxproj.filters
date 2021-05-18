@@ -54,13 +54,10 @@
     <Image Include="Background.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
-    <Image Include="Background2.png">
-      <Filter>Archivos de recursos</Filter>
-    </Image>
     <Image Include="Alam.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
-    <Image Include="Bricks.jpg">
+    <Image Include="Bricks.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
   </ItemGroup>
