@@ -150,17 +150,21 @@
     <ClInclude Include="..\..\glfw\include\shader\shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Texturas.fs" />
-    <None Include="Texturas.vs" />
-    <None Include="Vertex2.fs" />
-    <None Include="Vertex2.vs" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Alam.png" />
     <Image Include="Background.png" />
     <Image Include="Bricks.png" />
     <Image Include="cosa1.png" />
     <Image Include="cosa2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cubo.fs" />
+    <None Include="Cubo.vs" />
+    <None Include="Luz.fs" />
+    <None Include="Luz.vs" />
+    <None Include="Texturas.fs" />
+    <None Include="Texturas.vs" />
+    <None Include="Vertex2.fs" />
+    <None Include="Vertex2.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

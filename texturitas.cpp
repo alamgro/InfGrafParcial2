@@ -333,8 +333,27 @@ int main() {
 		Instantiate(nuestroShader, vec3(17.5f, 20.5f, -60.5f), vec3(25.0f, 40.0f, 25.0f));
 		Instantiate(nuestroShader, vec3(-17.5f, 20.5f, -60.5f), vec3(25.0f, 40.0f, 25.0f));
 		Instantiate(nuestroShader, vec3(0.0f, 32.75f, -60.7f), vec3(10.0f, 15.0f, 24.0f));
+		Instantiate(nuestroShader, vec3(0.0f, 39.0f, -103.0f), vec3(42.0f, 2.0f, 60.0f)); //Techo grandote
+
 		//Instantiate(nuestroShader, vec3(1.5f, 25.2f, -60.6f), vec3(10.0f, 5.0f, 24.0f), -25.0f, vec3(0.0f, 0.0f, 1.0f));
 		//Instantiate(nuestroShader, vec3(-1.5f, 25.2f, -60.5f), vec3(10.0f, 5.0f, 24.0f), 25.0f, vec3(0.0f, 0.0f, 1.0f));
+#pragma endregion
+
+#pragma region PASARELA EXTERIOR
+		Instantiate(nuestroShader, vec3(-8.0f, 18.75f, -18.0f), vec3(6.0f, 4.0f, 60.0f));
+		Instantiate(nuestroShader, vec3(8.0f, 18.75f, -18.0f), vec3(6.0f, 4.0f, 60.0f));
+
+		Instantiate(nuestroShader, vec3(-8.0f, 8.75f, 4.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(-8.0f, 8.75f, -7.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(-8.0f, 8.75f, -18.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(-8.0f, 8.75f, -29.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(-8.0f, 8.75f, -40.0f), vec3(5.0f, 18.0f, 5.0f));
+
+		Instantiate(nuestroShader, vec3(8.0f, 8.75f, 4.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(8.0f, 8.75f, -7.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(8.0f, 8.75f, -18.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(8.0f, 8.75f, -29.0f), vec3(5.0f, 18.0f, 5.0f));
+		Instantiate(nuestroShader, vec3(8.0f, 8.75f, -40.0f), vec3(5.0f, 18.0f, 5.0f));
 #pragma endregion
 
 #pragma region MESA
