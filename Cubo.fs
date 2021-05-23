@@ -9,7 +9,7 @@ uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
 
-int main()
+void main()
 {
 	//luz ambiental
 	float ambientStrength = 0.1;
@@ -19,7 +19,7 @@ int main()
 	vec3 difusa = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
 	float diff = max(dot(difusa, lightDir), 0.0);
-	vec3 diffuse = dif * lightColor;
+	vec3 diffuse = diff * lightColor;
 
 	//luz especular
 	float specularStrength = 0.5;

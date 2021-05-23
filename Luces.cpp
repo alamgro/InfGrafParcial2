@@ -30,7 +30,7 @@ const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
 
 //camara
-Camara camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camara camera(glm::vec3(0.0f, 0.0f, 6.0f));
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -40,7 +40,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 //Punto donde estará posicionada nuestra luz
-vec3 posLuz(1.2f, 1.0f, 2.0f);
+vec3 posLuz(0.0f, 2.0f, 0.0f);
 
 int main() {
 	//inicializar glfw
@@ -186,8 +186,13 @@ int main() {
 
 		//Propiedades de la luz
 		nuestroShader.use();
-		nuestroShader.setVec3("objectColor", 1.0f, 0.5f, 0.49f);
-		nuestroShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		nuestroShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+		nuestroShader.setVec3("lightColor", 0.0f, 0.3f, 0.0f);
+		//posLuz = vec3(posLuz.x, posLuz.y, 2.0f - (glfwGetTime() * 0.25f));
+		float radio = 4.0f;
+		float multipVelocidad = 5.0f;
+		posLuz = vec3(radio * cos(glfwGetTime() * multipVelocidad), posLuz.y, radio * sin(glfwGetTime() * multipVelocidad));
+
 		nuestroShader.setVec3("lightPos", posLuz);
 		nuestroShader.setVec3("viewPos", camera.Position);
 
@@ -212,6 +217,8 @@ int main() {
 		model = mat4(1.0f);
 		model = translate(model, posLuz);
 		model = scale(model, vec3(0.2f));
+		//model = translate(model, vec3(posLuz.x, posLuz.y, -glfwGetTime()));
+		model = rotate(model, 45.0f, vec3(0.0f, 1.0f, 0.0f));
 		luzShader.setMat4("model", model);
 
 		//renderizar luz
@@ -244,6 +251,10 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
