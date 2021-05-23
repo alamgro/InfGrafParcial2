@@ -155,6 +155,13 @@
     <Image Include="Bricks.png" />
     <Image Include="cosa1.png" />
     <Image Include="cosa2.jpg" />
+    <Image Include="Grass.jpg" />
+    <Image Include="Stone.jpg" />
+    <Image Include="StoneGray.jpg" />
+    <Image Include="WhiteWood.jpeg" />
+    <Image Include="Wood.jpg" />
+    <Image Include="Wool.jpg" />
+    <Image Include="Wool2.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cubo.fs" />

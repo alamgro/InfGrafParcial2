@@ -46,6 +46,27 @@
     <Image Include="Bricks.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
+    <Image Include="Grass.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wood.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Stone.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wool.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="WhiteWood.jpeg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wool2.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="StoneGray.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cubo.vs">

@@ -23,8 +23,8 @@ void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void processInput(GLFWwindow* window); //acciones para nuestra ventana
 
 //medidas de la pantalla
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
+const unsigned int WIDTH = 1280;
+const unsigned int HEIGHT = 720;
 
 //Cámara
 Camara camera(vec3(0.0f, 5.0f, 10.0f));
@@ -36,6 +36,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+//crear nuestras texturas
+unsigned int texBricks, texMetal, texGrass, texWood, texWhiteWood, texWool, texWool2, texStone, texStoneGray;
 
 int main() {
 	//inicializar glfw
@@ -49,7 +51,7 @@ int main() {
 #endif
 
 	//creamos nuestra ventana
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "TAMAL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "BUENAS TARDES", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Fallo en gcrear GLFW y la ventana date un balazo" << std::endl;
@@ -161,7 +163,7 @@ int main() {
 	};
 
 
-#pragma region SHADER LADRILLOS
+#pragma region SHADER 1
 	unsigned int VBO, VAO, EBO; //Vertex Buffer Object, Vertex Array Object y Extendet Array Object
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -182,7 +184,7 @@ int main() {
 	glEnableVertexAttribArray(1);
 #pragma endregion
 
-#pragma region SHADER METAL
+#pragma region SHADER 2
 	unsigned int VBO2, VAO2, EBO2; //Vertex Buffer Object, Vertex Array Object y Extendet Array Object
 	glGenVertexArrays(1, &VAO2);
 	glGenBuffers(1, &VBO2);
@@ -203,11 +205,10 @@ int main() {
 	glEnableVertexAttribArray(3);
 #pragma endregion
 
-	//crear y cargar nuestras texturas
-	unsigned int textura1, textura2;
-	//primera textura
-	glGenTextures(1, &textura1);
-	glBindTexture(GL_TEXTURE_2D, textura1);
+	
+#pragma region TEXTURA BRICKS
+	glGenTextures(1, &texBricks);
+	glBindTexture(GL_TEXTURE_2D, texBricks);
 	//configurar el comportamiento de la textura
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -230,10 +231,11 @@ int main() {
 		std::cout << "fallaste en cargar la primera textura" << std::endl;
 	}
 	stbi_image_free(data);
+#pragma endregion
 
-	//Textura2
-	glGenTextures(1, &textura2);
-	glBindTexture(GL_TEXTURE_2D, textura2);
+#pragma region TEXTURA METAL
+	glGenTextures(1, &texMetal);
+	glBindTexture(GL_TEXTURE_2D, texMetal);
 	//configurar el comportamiento de la textura
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -244,6 +246,7 @@ int main() {
 	data = stbi_load("Metal.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -252,14 +255,178 @@ int main() {
 		std::cout << "fallaste en cargar la segunda textura" << std::endl;
 	}
 	stbi_image_free(data);
+#pragma endregion
 
-	nuestroShader.use();
+#pragma region TEXTURA GRASS
+	glGenTextures(1, &texGrass);
+	glBindTexture(GL_TEXTURE_2D, texGrass);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("Grass.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Grass" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA WOOD
+	glGenTextures(1, &texWood);
+	glBindTexture(GL_TEXTURE_2D, texWood);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("Wood.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Wood" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA WHITE WOOD
+	glGenTextures(1, &texWhiteWood);
+	glBindTexture(GL_TEXTURE_2D, texWhiteWood);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("WhiteWood.jpeg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura White Wood" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA WOOL
+	glGenTextures(1, &texWool);
+	glBindTexture(GL_TEXTURE_2D, texWool);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("Wool.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Wool" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA WOOL2 PILLOW
+	glGenTextures(1, &texWool2);
+	glBindTexture(GL_TEXTURE_2D, texWool2);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("Wool2.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Wool" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA STONE
+	glGenTextures(1, &texStone);
+	glBindTexture(GL_TEXTURE_2D, texStone);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("Stone.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Stone" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
+#pragma region TEXTURA STONEGRAY
+	glGenTextures(1, &texStoneGray);
+	glBindTexture(GL_TEXTURE_2D, texStoneGray);
+	//configurar el comportamiento de la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//configuramos el filtrado de la textura en caso que se expanda
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//cargar nuestra textura
+	data = stbi_load("StoneGray.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "fallaste en cargar la textura Stone" << std::endl;
+	}
+	stbi_image_free(data);
+#pragma endregion
+
 	nuestroShader.setInt("textura1", 0);
-	nuestroShader.setInt("textura2", 1);
-
-	segundoShader.use();
 	segundoShader.setInt("textura1", 0);
-	segundoShader.setInt("textura2", 1);
 
 	//loop para que se pueda visualizar nuestra pantalla
 	while (!glfwWindowShouldClose(window))
@@ -273,18 +440,21 @@ int main() {
 		glClearColor(0.2f, 0.4f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //LIMPIEZA DEL BUFFER Z
 
-		//activado  y union de las texturas
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textura1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textura2);
+		////activado  y union de las texturas
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, textura1);
+
+		nuestroShader.use();
+		segundoShader.use();
+
+		/*glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textura2);*/
 
 		//transformaciones
 		/*mat4 transform = mat4(1.0f); //inicializamos con una matriz identidad
 		transform = translate(transform, vec3(0.3f, -0.5f, 0.0f));
 		transform = rotate(transform, (float)glfwGetTime(), vec3(0.0f, 1.0f, 1.0f));*/
 
-		//nuestroShader.use();
 		//MVP
 		/*mat4 view = mat4(1.0f);
 		mat4 projection = mat4(1.0f);
@@ -296,24 +466,10 @@ int main() {
 
 		nuestroShader.setMat4("projection", projection);
 		nuestroShader.setMat4("view", view);
-		segundoShader.setMat4("projection", projection);
-		segundoShader.setMat4("view", view);
-
-		/*unsigned int transformLoc = glGetUniformLocation(nuestroShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, value_ptr(transform));*/
 
 		glBindVertexArray(VAO);
-		//glBindVertexArray(VAO2);
+		glActiveTexture(GL_TEXTURE0);
 
-		/*for (unsigned int i = 0; i < 10; i++)
-		{
-			mat4 model = mat4(1.0f);
-			model = translate(model, posicionesCubo[i]);
-			float angulos = (float)glfwGetTime() * (i + 1);
-			model = rotate(model, radians(angulos), vec3(1.0f, 0.3f, 0.5f));
-			nuestroShader.setMat4("model", model);
-			glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
-		}*/
 /*
 #pragma region CASA
 		Instantiate(nuestroShader, vec3(0.0f, 0.0f, 0.0f), vec3(10.0f, 0.5f, 10.0f)); //Cimientos
@@ -329,17 +485,23 @@ int main() {
 */
 
 #pragma region MUROS EXTERIOR
-		Instantiate(segundoShader, vec3(0.0f, 0.0f, 0.0f), vec3(300.0f, 1.0f, 300.0f));
-		Instantiate(nuestroShader, vec3(17.5f, 20.5f, -60.5f), vec3(25.0f, 40.0f, 25.0f));
-		Instantiate(nuestroShader, vec3(-17.5f, 20.5f, -60.5f), vec3(25.0f, 40.0f, 25.0f));
-		Instantiate(nuestroShader, vec3(0.0f, 32.75f, -60.7f), vec3(10.0f, 15.0f, 24.0f));
-		Instantiate(nuestroShader, vec3(0.0f, 39.0f, -103.0f), vec3(42.0f, 2.0f, 60.0f)); //Techo grandote
+		glBindTexture(GL_TEXTURE_2D, texGrass); //Poner textura por defecto
+		Instantiate(nuestroShader, vec3(0.0f, 0.0f, -100.0f), vec3(300.0f, 1.0f, 300.0f)); //Pasto
+		glBindTexture(GL_TEXTURE_2D, texStoneGray);
+		//Pilares Gigantosos
+		Instantiate(nuestroShader, vec3(17.5f, 25.5f, -60.5f), vec3(25.0f, 50.0f, 25.0f));
+		Instantiate(nuestroShader, vec3(-17.5f, 25.5f, -60.5f), vec3(25.0f, 50.0f, 25.0f));
+		Instantiate(nuestroShader, vec3(17.5f, 25.5f, -145.5f), vec3(25.0f, 50.0f, 25.0f));
+		Instantiate(nuestroShader, vec3(-17.5f, 25.5f, -145.5f), vec3(25.0f, 50.0f, 25.0f));
 
-		//Instantiate(nuestroShader, vec3(1.5f, 25.2f, -60.6f), vec3(10.0f, 5.0f, 24.0f), -25.0f, vec3(0.0f, 0.0f, 1.0f));
-		//Instantiate(nuestroShader, vec3(-1.5f, 25.2f, -60.5f), vec3(10.0f, 5.0f, 24.0f), 25.0f, vec3(0.0f, 0.0f, 1.0f));
+		Instantiate(nuestroShader, vec3(0.0f, 39.0f, -103.0f), vec3(42.0f, 2.0f, 60.0f)); //Techo grandote
+		Instantiate(nuestroShader, vec3(0.0f, 32.75f, -60.7f), vec3(10.0f, 15.0f, 24.0f));
+		Instantiate(nuestroShader, vec3(0.0f, 20.05f, -135.5f), vec3(10.0f, 40.0f, 5.0f));
+
 #pragma endregion
 
 #pragma region PASARELA EXTERIOR
+		glBindTexture(GL_TEXTURE_2D, texStone);
 		Instantiate(nuestroShader, vec3(-8.0f, 18.75f, -18.0f), vec3(6.0f, 4.0f, 60.0f));
 		Instantiate(nuestroShader, vec3(8.0f, 18.75f, -18.0f), vec3(6.0f, 4.0f, 60.0f));
 
@@ -356,7 +518,14 @@ int main() {
 		Instantiate(nuestroShader, vec3(8.0f, 8.75f, -40.0f), vec3(5.0f, 18.0f, 5.0f));
 #pragma endregion
 
+#pragma region PAREDES
+		Instantiate(nuestroShader, vec3(23.0f, 20.05f, -103.0f), vec3(5.0f, 40.0f, 60.0f));
+		Instantiate(nuestroShader, vec3(-23.0f, 20.05f, -103.0f), vec3(5.0f, 40.0f, 60.0f));
+		
+#pragma endregion
+
 #pragma region MESA
+		glBindTexture(GL_TEXTURE_2D, texWood);
 		Instantiate(nuestroShader, vec3(0.0f, 1.5f, -103.0f), vec3(5.0f, 0.2f, 10.0f));
 		Instantiate(nuestroShader, vec3(1.75f, 1.0f, -98.75f));
 		Instantiate(nuestroShader, vec3(-1.75f, 1.0f, -98.75f));
@@ -365,6 +534,7 @@ int main() {
 #pragma endregion
 
 #pragma region SILLAS
+		glBindTexture(GL_TEXTURE_2D, texWhiteWood);
 		Instantiate(nuestroShader, vec3(-3.5f, 0.75f, -100.0f), vec3(0.5f, 0.5f, 0.5f));
 		Instantiate(nuestroShader, vec3(-3.75f, 1.25f, -100.0f), vec3(0.1f, 1.5f, 0.5f));
 		
@@ -392,13 +562,6 @@ int main() {
 
 #pragma endregion
 
-#pragma region Paredes
-		Instantiate(nuestroShader, vec3(23.0f, 20.05f, -103.0f), vec3(5.0f, 40.0f, 60.0f));
-		Instantiate(nuestroShader, vec3(-23.0f, 20.05f, -103.0f), vec3(5.0f, 40.0f, 60.0f));
-		Instantiate(nuestroShader, vec3(17.5f, 20.05f, -145.5f), vec3(25.0f, 40.0f, 25.0f));
-		Instantiate(nuestroShader, vec3(-17.5f, 20.05f, -145.5f), vec3(25.0f, 40.0f, 25.0f));
-		Instantiate(nuestroShader, vec3(0.0f, 20.05f, -135.5f), vec3(10.0f, 40.0f, 5.0f));
-#pragma endregion
 
 #pragma region COCINA
 		Instantiate(nuestroShader, vec3(-11.0f, 1.0f, -129.0f), vec3(1.0f, 1.0f, 8.0f));
@@ -408,8 +571,9 @@ int main() {
 		Instantiate(nuestroShader, vec3(-11.0f, 2.5f, -122.0f), vec3(1.0f, 2.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-20.0f, 2.5f, -122.0f), vec3(1.0f, 2.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-11.0f, 8.5f, -127.5f), vec3(1.0f, 10.0f, 12.0f));
-		Instantiate(nuestroShader, vec3(-16.0f, 8.5f, -122.25f), vec3(9.0f, 10.0f, 1.0f));
+		Instantiate(nuestroShader, vec3(-16.0f, 8.5f, -122.0f), vec3(9.0f, 10.0f, 1.0f));
 
+		glBindTexture(GL_TEXTURE_2D, texWood);
 		Instantiate(nuestroShader, vec3(-16.0f, 1.0f, -126.25f), vec3(3.0f, 1.0f, 2.0f));
 		Instantiate(nuestroShader, vec3(-14.25f, 1.0f, -132.5f), vec3(2.0f, 1.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-19.0f, 1.0f, -132.5f), vec3(2.0f, 1.0f, 1.0f));
@@ -417,6 +581,7 @@ int main() {
 #pragma endregion
 
 #pragma region ESCALERAS y TECHO
+		glBindTexture(GL_TEXTURE_2D, texStoneGray);
 		Instantiate(nuestroShader, vec3(-18.0f, 1.0f, -80.25f), vec3(5.0f, 1.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-18.0f, 2.0f, -81.25f), vec3(5.0f, 1.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-18.0f, 3.0f, -82.25f), vec3(5.0f, 1.0f, 1.0f));
@@ -431,30 +596,38 @@ int main() {
 		Instantiate(nuestroShader, vec3(-18.0f, 12.0f, -91.25f), vec3(5.0f, 1.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-18.0f, 13.0f, -92.25f), vec3(5.0f, 1.0f, 1.0f));
 		
+		
 		Instantiate(nuestroShader, vec3(-18.0f, 14.0f, -113.25f), vec3(5.0f, 1.0f, 41.0f));
 		Instantiate(nuestroShader, vec3(2.5f, 14.0f, -103.0f), vec3(36.0f, 1.0f, 60.0f));
-
 #pragma endregion
 
 #pragma region CUARTO GRANDE
+		glBindTexture(GL_TEXTURE_2D, texStone);
 		Instantiate(nuestroShader, vec3(11.5f, 26.5f, -110.0f), vec3(18.0f, 24.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(-11.5f, 26.5f, -110.0f), vec3(18.0f, 24.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(0.0f, 29.0f, -110.0f), vec3(5.0f, 18.0f, 1.0f));
 		
+		glBindTexture(GL_TEXTURE_2D, texWool);
 		Instantiate(nuestroShader, vec3(0.0f, 16.0f, -128.0f), vec3(6.0f, 1.0f, 10.0f));
-		Instantiate(nuestroShader, vec3(2.25f, 15.0f, -123.75f));
-		Instantiate(nuestroShader, vec3(-2.25f, 15.0f, -123.75f));
+		glBindTexture(GL_TEXTURE_2D, texWool2);
 		Instantiate(nuestroShader, vec3(1.5f, 16.75f, -132.0f), vec3(2.0f, 0.5f, 1.0f));
 		Instantiate(nuestroShader, vec3(-1.5f, 16.75f, -132.0f), vec3(2.0f, 0.5f, 1.0f));
-		Instantiate(nuestroShader, vec3(-6.0f, 15.5f, -132.0f), vec3(4.0f, 2.0f, 2.0f));
+		glBindTexture(GL_TEXTURE_2D, texWood);
+		Instantiate(nuestroShader, vec3(2.25f, 15.0f, -123.75f));
+		Instantiate(nuestroShader, vec3(-2.25f, 15.0f, -123.75f));
+
 		Instantiate(nuestroShader, vec3(-6.0f, 17.25f, -132.0f), vec3(0.5f, 1.5f, 0.5f));
-		Instantiate(nuestroShader, vec3(11.75f, 18.5f, -132.0f), vec3(8.0f, 8.0f, 2.0f));
 		Instantiate(nuestroShader, vec3(0.0f, 24.75f, -128.0f), vec3(6.0f, 0.5f, 10.0f));
-		Instantiate(nuestroShader, vec3(2.25f, 20.5f, -123.75f), vec3(0.5f, 8.0f, 0.5f));
-		Instantiate(nuestroShader, vec3(-2.25f, 20.5f, -123.75f), vec3(0.5f, 8.0f, 0.5f));
+		Instantiate(nuestroShader, vec3(2.25f, 20.5f, -123.75f), vec3(0.5f, 8.0f, 0.5f)); //Palo de la cama 1
+		Instantiate(nuestroShader, vec3(-2.25f, 20.5f, -123.75f), vec3(0.5f, 8.0f, 0.5f)); //Palo de la cama 2
+		glBindTexture(GL_TEXTURE_2D, texWhiteWood);
+		Instantiate(nuestroShader, vec3(-6.0f, 15.5f, -132.0f), vec3(4.0f, 2.0f, 2.0f));
+		Instantiate(nuestroShader, vec3(11.75f, 18.5f, -132.0f), vec3(8.0f, 8.0f, 2.0f));
+		
 #pragma endregion
 
 #pragma region CELDAS
+		glBindTexture(GL_TEXTURE_2D, texMetal);
 		Instantiate(nuestroShader, vec3(9.25f, 22.0f, -73.75f), vec3(0.5f, 15.0f, 0.5f));
 		Instantiate(nuestroShader, vec3(9.25f, 22.0f, -74.75f), vec3(0.5f, 15.0f, 0.5f));
 		Instantiate(nuestroShader, vec3(9.25f, 22.0f, -75.75f), vec3(0.5f, 15.0f, 0.5f));
@@ -500,31 +673,17 @@ int main() {
 		Instantiate(nuestroShader, vec3(9.31f, 19.25f, -91.25f), vec3(0.5f, 0.5f, 37.0f));
 		Instantiate(nuestroShader, vec3(9.31f, 24.25f, -91.25f), vec3(0.5f, 0.5f, 37.0f));
 
-		//PARED MEDIA
-		Instantiate(nuestroShader, vec3(15.0f, 22.0f, -90.75f), vec3(11.0f, 15.0f, 0.5f));
-
 		//PUERTITAS
 		Instantiate(nuestroShader, vec3(7.84f, 16.5f, -80.28f), vec3(3.0f, 5.0f, 0.5f), -25.0f, vec3(0.0f, 1.0f, 0.0f));
 		Instantiate(nuestroShader, vec3(8.25f, 16.5f, -99.8f), vec3(3.0f, 5.0f, 0.5f), -50.0f, vec3(0.0f, 1.0f, 0.0f));
 
+		//PARED MEDIA
+		glBindTexture(GL_TEXTURE_2D, texStone);
+		Instantiate(nuestroShader, vec3(15.0f, 22.0f, -90.75f), vec3(11.0f, 15.0f, 0.5f));
+
+		
+
 #pragma endregion
-
-		
-		mat4 transform2 = mat4(1.0f);
-		transform2 = translate(transform2, vec3(-0.3f, 0.5f, 0.0f));
-		transform2 = rotate(transform2, ((float)glfwGetTime() * -1) * 5, vec3(1.0f, 1.0f, 1.0f));
-		transform2 = scale(transform2, vec3(0.5, 0.5, 0.5));
-
-		//segundoShader.use();
-
-		unsigned int transformLoc2 = glGetUniformLocation(segundoShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc2, 1, GL_FALSE, value_ptr(transform2));
-
-		float colorverde = sin(glfwGetTime()) / 2.0f + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(segundoShader.ID, "nuestroColor");
-		glUniform4f(vertexColorLocation, 0.0f, colorverde, 0.0f, 1.0f);
-		
-		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		//detecte eventos de IO
 		glfwSwapBuffers(window);
