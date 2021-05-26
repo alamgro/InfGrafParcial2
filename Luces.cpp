@@ -26,8 +26,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window); //acciones para nuestra ventana
 
 //medidas de la pantalla
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
+const unsigned int WIDTH = 1280;
+const unsigned int HEIGHT = 720;
 
 //camara
 Camara camera(glm::vec3(0.0f, 0.0f, 6.0f));
@@ -181,20 +181,33 @@ int main() {
 		processInput(window);
 
 		//Renderizado
-		glClearColor(0.2f, 0.4f, 0.6f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //limpieza del buffer z
 
 		//Propiedades de la luz
 		nuestroShader.use();
-		nuestroShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
-		nuestroShader.setVec3("lightColor", 0.0f, 0.3f, 0.0f);
+		nuestroShader.setVec3("light.position", posLuz);
+		nuestroShader.setVec3("viewPos", camera.Position);
 		//posLuz = vec3(posLuz.x, posLuz.y, 2.0f - (glfwGetTime() * 0.25f));
-		float radio = 4.0f;
-		float multipVelocidad = 5.0f;
-		posLuz = vec3(radio * cos(glfwGetTime() * multipVelocidad), posLuz.y, radio * sin(glfwGetTime() * multipVelocidad));
+		float radio = 3.0f;
+		float multipVelocidad = 1.2f;
+		posLuz = vec3((radio * cos(glfwGetTime() * multipVelocidad)), posLuz.y, posLuz.z);
 
 		nuestroShader.setVec3("lightPos", posLuz);
 		nuestroShader.setVec3("viewPos", camera.Position);
+		
+
+		//Propiedades avanzadas de la luz
+		vec3 lightColor(1.0f);
+		/*lightColor.x = sin(glfwGetTime() * 2.21f);
+		lightColor.y = sin(glfwGetTime() * 1.33f);
+		lightColor.z = sin(glfwGetTime() * 3.18f);*/
+		vec3 diffuseColor = lightColor * vec3(0.5f);
+		vec3 ambientColor = diffuseColor * vec3(0.2f);
+		nuestroShader.setVec3("light.ambient", ambientColor);
+		nuestroShader.setVec3("light.diffuse", diffuseColor);
+		nuestroShader.setVec3("light.specular", vec3(1.0f));
+
 
 		//mvp
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
@@ -203,12 +216,71 @@ int main() {
 		nuestroShader.setMat4("projection", projection);
 		nuestroShader.setMat4("view", view);
 
-		mat4 model = mat4(1.0f);
-		nuestroShader.setMat4("model", model);
-
-		//renderizar cubo
 		glBindVertexArray(VAO);
+
+		mat4 model = mat4(1.0f);
+		model = translate(model, vec3(-4.2f, 0.0f, 0.0f));
+
+#pragma region ESMERALDA
+		//Propiedades de los materiales
+		nuestroShader.setVec3("material.ambient", 0.0215f, 0.1745f, 0.0215f);
+		nuestroShader.setVec3("material.diffuse", 0.07568f, 0.61424f, 0.07568f);
+		nuestroShader.setVec3("material.specular", 0.633f, 0.727811f, 0.633f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.6f);
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f));
+		nuestroShader.setMat4("model", model);
 		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
+
+#pragma region JADE
+		nuestroShader.setVec3("material.ambient", 0.135f, 0.2225f, 0.1575f);
+		nuestroShader.setVec3("material.diffuse", 0.54f, 0.89f, 0.63f);
+		nuestroShader.setVec3("material.specular", 0.316228f, 0.316228f, 0.316228f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.1f);
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f));//Propiedades de los materiales
+		nuestroShader.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
+
+#pragma region OBSIDIANA
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f)); 
+		nuestroShader.setVec3("material.ambient", 0.05375f, 0.05f, 0.06625f);
+		nuestroShader.setVec3("material.diffuse", 0.18275f, 0.17f, 0.22525f);
+		nuestroShader.setVec3("material.specular", 0.332741f, 0.328634f, 0.346435f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.3f);
+		nuestroShader.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
+
+#pragma region PERLA
+		nuestroShader.setVec3("material.ambient", 0.25f, 0.20725f, 0.20725f);
+		nuestroShader.setVec3("material.diffuse", 1.0f, 0.829f, 0.829f);
+		nuestroShader.setVec3("material.specular", 0.296648f, 0.296648f, 0.296648f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.088f);
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f));
+		nuestroShader.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
+
+#pragma region RUBY
+		nuestroShader.setVec3("material.ambient", 0.1745f, 0.01175f, 0.01175f);
+		nuestroShader.setVec3("material.diffuse", 0.61424f, 0.04136f, 0.04136f);
+		nuestroShader.setVec3("material.specular", 0.727811f, 0.626959f, 0.626959f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.6f);
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f)); 
+		nuestroShader.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
+
+#pragma region TURQUESA
+		nuestroShader.setVec3("material.ambient", 0.1f, 0.18725f, 0.1745f);
+		nuestroShader.setVec3("material.diffuse", 0.396f, 0.74151f, 0.69102f);
+		nuestroShader.setVec3("material.specular", 0.297254f, 0.30829f, 0.306678f);
+		nuestroShader.setFloat("material.shininess", 128.0f * 0.1f);
+		model = translate(model, vec3(1.2f, 0.0f, 0.0f));
+		nuestroShader.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
+#pragma endregion
 
 		//Configurar punto de luz
 		luzShader.use();
@@ -220,7 +292,7 @@ int main() {
 		//model = translate(model, vec3(posLuz.x, posLuz.y, -glfwGetTime()));
 		model = rotate(model, 45.0f, vec3(0.0f, 1.0f, 0.0f));
 		luzShader.setMat4("model", model);
-
+		
 		//renderizar luz
 		glBindVertexArray(VAO2);
 		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
