@@ -18,7 +18,7 @@
     <ClCompile Include="..\..\glfw\src\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="Luces.cpp">
+    <ClCompile Include="Pueblo.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,6 +67,57 @@
     <Image Include="StoneGray.jpg">
       <Filter>Archivos de origen</Filter>
     </Image>
+    <Image Include="Metal.png">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\back.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\bottom.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\front.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\left.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\right.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="skybox\top.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Dirt3.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="WoodenWindow.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wood3.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wood2.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="WantedSign.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Door1.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="OldMetal.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wood4.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Dirt2.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
+    <Image Include="Wood5.jpg">
+      <Filter>Archivos de origen</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cubo.vs">
@@ -91,6 +142,12 @@
       <Filter>Archivos de origen</Filter>
     </None>
     <None Include="Vertex2.vs">
+      <Filter>Archivos de origen</Filter>
+    </None>
+    <None Include="Skybox.vs">
+      <Filter>Archivos de origen</Filter>
+    </None>
+    <None Include="Skybox.fs">
       <Filter>Archivos de origen</Filter>
     </None>
   </ItemGroup>

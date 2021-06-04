@@ -143,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\glfw\src\glad.c" />
-    <ClCompile Include="Luces.cpp" />
+    <ClCompile Include="Pueblo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\glfw\include\camara\camara.h" />
@@ -155,11 +155,28 @@
     <Image Include="Bricks.png" />
     <Image Include="cosa1.png" />
     <Image Include="cosa2.jpg" />
+    <Image Include="Dirt2.jpg" />
+    <Image Include="Dirt3.jpg" />
+    <Image Include="Door1.jpg" />
     <Image Include="Grass.jpg" />
+    <Image Include="Metal.png" />
+    <Image Include="OldMetal.jpg" />
+    <Image Include="skybox\back.jpg" />
+    <Image Include="skybox\bottom.jpg" />
+    <Image Include="skybox\front.jpg" />
+    <Image Include="skybox\left.jpg" />
+    <Image Include="skybox\right.jpg" />
+    <Image Include="skybox\top.jpg" />
     <Image Include="Stone.jpg" />
     <Image Include="StoneGray.jpg" />
+    <Image Include="WantedSign.jpg" />
     <Image Include="WhiteWood.jpeg" />
     <Image Include="Wood.jpg" />
+    <Image Include="Wood2.jpg" />
+    <Image Include="Wood3.jpg" />
+    <Image Include="Wood4.jpg" />
+    <Image Include="Wood5.jpg" />
+    <Image Include="WoodenWindow.jpg" />
     <Image Include="Wool.jpg" />
     <Image Include="Wool2.jpg" />
   </ItemGroup>
@@ -168,6 +185,8 @@
     <None Include="Cubo.vs" />
     <None Include="Luz.fs" />
     <None Include="Luz.vs" />
+    <None Include="Skybox.fs" />
+    <None Include="Skybox.vs" />
     <None Include="Texturas.fs" />
     <None Include="Texturas.vs" />
     <None Include="Vertex2.fs" />
