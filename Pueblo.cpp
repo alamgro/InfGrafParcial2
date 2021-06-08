@@ -261,7 +261,7 @@ int main() {
 	texDoor = LoadTexture("Door1.jpg");
 #pragma endregion
 
-	//nuestroShader.setInt("textura1", 0);
+	nuestroShader.setInt("textura1", 0);
 	nuestroShader.use();
 
 	//loop para que se pueda visualizar nuestra pantalla
@@ -641,14 +641,14 @@ int main() {
 		//Dibujamos el skybox
 		// Función de profundidad encargada del cálculo entre el usuario y la profundidad del skybox para generación de infinidad
 		glDepthFunc(GL_LEQUAL);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		skyboxShader.use();
 		view = mat4(mat3(camera.GetViewMatrix()));
 		skyboxShader.setMat4("view", view);
 		skyboxShader.setMat4("projection", projection);
 
 		glBindVertexArray(sVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS);
