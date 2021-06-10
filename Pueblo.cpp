@@ -13,6 +13,13 @@
 #include <iostream>
 #include <vector>
 
+
+/*
+Tenemos luz:
+	-Ambiental: luz homogénea, que se va reflejar en un ángulo de 90° que va a iluminar todos los objetos de nuestro shader
+	-Especular: es un punto de luz concentrado dentro de la figura. Entre más grande sea el valor, se concentrará más en un punto
+	-combinada: Para crear efectos mejores
+*/
 using namespace glm;
 using namespace std;
 
@@ -22,32 +29,40 @@ void Instantiate(Shader& _shader, vec3 _position, float _angle, vec3 _axis);
 void Instantiate(Shader& _shader, vec3 _position, vec3 _scale, float _angle, vec3 _axis);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height); //almacenar nuestra ventana y configs
-void mouse_callback(GLFWwindow* window, double xPos, double yPos);
-void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window); //acciones para nuestra ventana
-unsigned int LoadTexture(const char* path); //Cargar textura
+unsigned int LoadTexture(const char* path);
 unsigned int LoadCubeMap(vector<string> faces);
 
 //medidas de la pantalla
-const unsigned int WIDTH = 1280;
-const unsigned int HEIGHT = 720;
+const unsigned int WIDTH = 1920;
+const unsigned int HEIGHT = 1024;
 
-//Cámara
-Camara camera(vec3(0.0f, 5.0f, -20.0f));
+//Número de vértices en la figura
+const unsigned int cubeVertexNum = 100;
+
+//camara
+Camara camera(glm::vec3(0.0f, 5.0f, 30.0f));
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 
-//Timing
+//timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-//crear nuestras texturas
+//Mis texturas
+//unsigned int texBricks, texMetal, texGrass, texWood, texWhiteWood, texWool, texWool2, texStone, texStoneGray;
 unsigned int texMetal, texOldMetal, texWoodenWindow, texDirt, texStone, texStone2, texBox, texWantedSign, texDoor;
 unsigned int texWood, texWood2, texWood3, texWood4, texWood5, texWhiteWood;
 
+//Punto donde estará posicionada nuestra luz
+vec3 posLuz(0.0f, 2.0f, 0.0f);
+
+float tempCoord = 0.0f;
+
 int main() {
-	float tempCoord = 0.0f;
 	//inicializar glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -59,20 +74,19 @@ int main() {
 #endif
 
 	//creamos nuestra ventana
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "MUY BUENAS TARDES", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Buenas tardes", NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Fallo en gcrear GLFW y la ventana" << std::endl;
+		std::cout << "Fallo en crear GLFW y la ventana" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	//DECIRLE a glfw que va recibir señales del mouse
+	//decirle a glfw que va a recibir señales de mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//comprobar que glad se este corriendo o se haya inicializado correctamente
@@ -82,59 +96,60 @@ int main() {
 		return -1;
 	}
 
-	glEnable(GL_DEPTH_TEST); //Esto es para evitar la sobreposición de las figuras
+	glEnable(GL_DEPTH_TEST); //comprobacion del buffer z
 
-	Shader nuestroShader("Texturas.vs", "Texturas.fs");
+	Shader nuestroShader("Cubo.vs", "Cubo.fs");
+	Shader luzShader("Luz.vs", "Luz.fs");
 	Shader skyboxShader("Skybox.vs", "Skybox.fs");
 
 	float vertices[]{
-		//posiciones			//colores			//texturas
-	 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		//posiciones		//cómo afecta
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-	 -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	  0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	unsigned int indices[]
 	{
-		 0, 1, 2,
+		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 10, 11,
@@ -146,6 +161,19 @@ int main() {
 		27, 28, 29,
 		30, 31, 32,
 		33, 34, 35
+	};
+
+	vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
 	float verticesSkybox[] = {
@@ -192,7 +220,6 @@ int main() {
 		 1.0f, -1.0f,  1.0f
 	};
 
-#pragma region SHADER 1
 	unsigned int VBO, VAO, EBO; //Vertex Buffer Object, Vertex Array Object y Extendet Array Object
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -206,12 +233,24 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	//posiciones
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	//texturas
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	//luces
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-#pragma endregion
+	//Texturas
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	//segundo shader
+	unsigned int VAO2;
+	glGenVertexArrays(1, &VAO2);
+	glBindVertexArray(VAO2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
 	//Skybox Shader
 	unsigned int sVAO, sVBO;
@@ -220,7 +259,7 @@ int main() {
 	glGenBuffers(1, &sVBO);
 	glBindVertexArray(sVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, sVAO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesSkybox), &verticesSkybox, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesSkybox), &verticesSkybox, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
@@ -241,6 +280,18 @@ int main() {
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
+	unsigned int diffuseMap = LoadTexture("Box.png");
+	unsigned int specularMap = LoadTexture("Box_Specular.png");
+
+	//Mis texturas
+	/*texMetal = LoadTexture("Metal.png");
+	texGrass = LoadTexture("Grass.jpg");
+	texWood = LoadTexture("Wood.jpg");
+	texWhiteWood = LoadTexture("whiteWood.jpeg");
+	texWool = LoadTexture("Wool.jpg");
+	texWool2 = LoadTexture("Wool2.jpg");
+	texStone = LoadTexture("Stone.jpg");
+	texStoneGray = LoadTexture("StoneGray.jpg");*/
 
 #pragma region CARGA DE TEXTURAS
 	texWood = LoadTexture("Wood.jpg"); //Palos
@@ -261,12 +312,13 @@ int main() {
 	texDoor = LoadTexture("Door1.jpg");
 #pragma endregion
 
-	nuestroShader.setInt("textura1", 0);
 	nuestroShader.use();
+	nuestroShader.setInt("material.diffuse", 0);
+	nuestroShader.setInt("material.specular", 1);
 
-	//loop para que se pueda visualizar nuestra pantalla
 	while (!glfwWindowShouldClose(window))
 	{
+		//calculo para el mouse para que pueda captar los movimeintos en tiempo real
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -274,17 +326,36 @@ int main() {
 
 		//Renderizado
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //LIMPIEZA DEL BUFFER Z
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //limpieza del buffer z
 
+		//Propiedades de la luz
 		nuestroShader.use();
+		//nuestroShader.setVec3("light.position", posLuz);
+		nuestroShader.setVec3("light.position", camera.Position);
+		nuestroShader.setVec3("light.direction", camera.Front);
+		nuestroShader.setFloat("light.cutOff", cos(radians(25.0f)));
+		nuestroShader.setFloat("light.outerCutOff", cos(radians(32.0f)));
+		nuestroShader.setVec3("viewPos", camera.Position);
 
-		mat4 projection = perspective(radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
-		mat4 view = camera.GetViewMatrix();
+		//nuestroShader.setVec3("light.ambient", vec3(0.6f));
+		nuestroShader.setVec3("light.ambient", 0.4f, 0.1f, 0.0f);
+		nuestroShader.setVec3("light.diffuse", 0.9f, 0.9f, 0.9f);
+		nuestroShader.setVec3("light.specular", vec3(0.9f));
+		nuestroShader.setFloat("light.constant", 1.0f);
+		nuestroShader.setFloat("light.linear", 0.1f);
+		nuestroShader.setFloat("light.quadratic", 0.0032f);
+
+		nuestroShader.setFloat("material.shininess", 32.0f);
+
+		//mvp
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 300.0f);
+		glm::mat4 view = camera.GetViewMatrix();
 
 		nuestroShader.setMat4("projection", projection);
 		nuestroShader.setMat4("view", view);
 
 		glBindVertexArray(VAO);
+
 		glActiveTexture(GL_TEXTURE0);
 
 #pragma region SUELO
@@ -294,23 +365,23 @@ int main() {
 
 #pragma region BOXES
 		glBindTexture(GL_TEXTURE_2D, texBox);
-		Instantiate(nuestroShader, vec3(12.0f, 2.0f, -6.25f)); 
-		Instantiate(nuestroShader, vec3(12.0f, 1.0f, -7.0f)); 
-		Instantiate(nuestroShader, vec3(8.25f, 1.25f, 14.75f)); 
-		Instantiate(nuestroShader, vec3(7.0f, 1.25f, 14.75f)); 
-		Instantiate(nuestroShader, vec3(7.75f, 2.25f, 15.0f)); 
-		Instantiate(nuestroShader, vec3(8.75f, 1.25f, -18.25f)); 
-		Instantiate(nuestroShader, vec3(-9.25f, 1.0f, -18.25f)); 
-		Instantiate(nuestroShader, vec3(-12.25f, 1.25f, -5.75f)); 
-		Instantiate(nuestroShader, vec3(-16.0f, 1.0f, -7.5f)); 
-		Instantiate(nuestroShader, vec3(12.0f, 1.0f, -5.75f)); 
-		Instantiate(nuestroShader, vec3(10.75f, 1.0f, -6.0f)); 
-		Instantiate(nuestroShader, vec3(6.0f, 1.0f, -12.5f)); 
-		Instantiate(nuestroShader, vec3(4.0f, 1.0f, -23.0f)); 
-		Instantiate(nuestroShader, vec3(-7.75f, 1.0f, -20.75f)); 
-		Instantiate(nuestroShader, vec3(-3.0f, 1.0f, -8.0f)); 
-		Instantiate(nuestroShader, vec3(6.0f, 1.0f, -4.0f)); 
-		Instantiate(nuestroShader, vec3(-5.5f, 1.0f, 7.75f)); 
+		Instantiate(nuestroShader, vec3(12.0f, 2.0f, -6.25f));
+		Instantiate(nuestroShader, vec3(12.0f, 1.0f, -7.0f));
+		Instantiate(nuestroShader, vec3(8.25f, 1.25f, 14.75f));
+		Instantiate(nuestroShader, vec3(7.0f, 1.25f, 14.75f));
+		Instantiate(nuestroShader, vec3(7.75f, 2.25f, 15.0f));
+		Instantiate(nuestroShader, vec3(8.75f, 1.25f, -18.25f));
+		Instantiate(nuestroShader, vec3(-9.25f, 1.0f, -18.25f));
+		Instantiate(nuestroShader, vec3(-12.25f, 1.25f, -5.75f));
+		Instantiate(nuestroShader, vec3(-16.0f, 1.0f, -7.5f));
+		Instantiate(nuestroShader, vec3(12.0f, 1.0f, -5.75f));
+		Instantiate(nuestroShader, vec3(10.75f, 1.0f, -6.0f));
+		Instantiate(nuestroShader, vec3(6.0f, 1.0f, -12.5f));
+		Instantiate(nuestroShader, vec3(4.0f, 1.0f, -23.0f));
+		Instantiate(nuestroShader, vec3(-7.75f, 1.0f, -20.75f));
+		Instantiate(nuestroShader, vec3(-3.0f, 1.0f, -8.0f));
+		Instantiate(nuestroShader, vec3(6.0f, 1.0f, -4.0f));
+		Instantiate(nuestroShader, vec3(-5.5f, 1.0f, 7.75f));
 
 #pragma endregion
 
@@ -338,7 +409,7 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texWood);
 		//Parte izquierda
 		tempCoord = -21.0f;
-		for (int i = 0; i < 9; i++) 
+		for (int i = 0; i < 9; i++)
 		{
 			Instantiate(nuestroShader, vec3(tempCoord, 1.5f, -22.0f), vec3(0.2f, 2.0f, 0.2f));
 			tempCoord += 2.0f;
@@ -357,7 +428,7 @@ int main() {
 		Instantiate(nuestroShader, vec3(0.0f, 6.75f, -22.0f), vec3(7.5f, 0.5f, 0.5f));
 		Instantiate(nuestroShader, vec3(-1.0f, 6.25f, -22.0f), vec3(0.1f, 0.5f, 0.1f)); //Palito 1
 		Instantiate(nuestroShader, vec3(1.0f, 6.25f, -22.0f), vec3(0.1f, 0.5f, 0.1f)); //Palito 2
-		
+
 		//Tablas horizontales
 		Instantiate(nuestroShader, vec3(12.25f, 2.25f, -22.15f), vec3(18.0f, 0.2f, 0.1f));
 		Instantiate(nuestroShader, vec3(12.25f, 1.5f, -22.15f), vec3(18.0f, 0.2f, 0.1f));
@@ -366,7 +437,7 @@ int main() {
 		Instantiate(nuestroShader, vec3(-12.25f, 2.25f, -22.15f), vec3(18.0f, 0.2f, 0.1f));
 		Instantiate(nuestroShader, vec3(-12.25f, 1.5f, -22.15f), vec3(18.0f, 0.2f, 0.1f));
 		Instantiate(nuestroShader, vec3(-12.25f, 0.75f, -22.15f), vec3(18.0f, 0.2f, 0.1f));
-		
+
 
 		glBindTexture(GL_TEXTURE_2D, texOldMetal);
 		Instantiate(nuestroShader, vec3(0.0f, 5.5f, -22.0f), vec3(4.0f, 1.0f, 0.1f)); //Letrero
@@ -419,7 +490,7 @@ int main() {
 
 #pragma region MOTEL
 		glBindTexture(GL_TEXTURE_2D, texWood2);
-		Instantiate(nuestroShader, vec3(-15.0f, 8.5f, -14.0f), vec3(10.0f, 16.0f, 12.0f)); 
+		Instantiate(nuestroShader, vec3(-15.0f, 8.5f, -14.0f), vec3(10.0f, 16.0f, 12.0f));
 		Instantiate(nuestroShader, vec3(-9.0f, 4.5f, -13.75f), vec3(3.0f, 0.2f, 8.0f), -20.0f, vec3(0.0f, 0.0f, 1.0f)); //Techito
 
 		glBindTexture(GL_TEXTURE_2D, texDoor);
@@ -439,13 +510,13 @@ int main() {
 		Instantiate(nuestroShader, vec3(-10.0f, 17.25f, -14.0f), vec3(0.2f, 3.0f, 8.0f));
 
 		glBindTexture(GL_TEXTURE_2D, texWood);
-		Instantiate(nuestroShader, vec3(-9.0f, 2.5f, -11.0f), vec3(0.25f, 4.0f, 0.25f)); 
+		Instantiate(nuestroShader, vec3(-9.0f, 2.5f, -11.0f), vec3(0.25f, 4.0f, 0.25f));
 		Instantiate(nuestroShader, vec3(-9.0f, 2.5f, -17.0f), vec3(0.25f, 4.0f, 0.25f));
 
 #pragma endregion
 
 #pragma region SHERIFF COMISARIA
-		glBindTexture(GL_TEXTURE_2D, texWood4); 
+		glBindTexture(GL_TEXTURE_2D, texWood4);
 		Instantiate(nuestroShader, vec3(13.5f, 0.5f, -14.0f), vec3(13.0f, 0.5f, 12.0f)); //Piso
 		//techito y postes
 		glBindTexture(GL_TEXTURE_2D, texWood);
@@ -479,8 +550,8 @@ int main() {
 
 		glBindTexture(GL_TEXTURE_2D, texStone);
 		//Paredes
-		Instantiate(nuestroShader, vec3(18.5f, 4.75f, 1.0f), vec3(0.5f, 8.0f, 8.0f)); 
-		Instantiate(nuestroShader, vec3(9.0f, 4.75f, 2.5f), vec3(0.5f, 8.0f, 5.0f)); 
+		Instantiate(nuestroShader, vec3(18.5f, 4.75f, 1.0f), vec3(0.5f, 8.0f, 8.0f));
+		Instantiate(nuestroShader, vec3(9.0f, 4.75f, 2.5f), vec3(0.5f, 8.0f, 5.0f));
 		Instantiate(nuestroShader, vec3(13.75f, 4.75f, 4.75f), vec3(9.0f, 8.0f, 0.5f));
 		Instantiate(nuestroShader, vec3(9.0f, 4.75f, -2.5f), vec3(0.5f, 8.0f, 1.0f));
 		Instantiate(nuestroShader, vec3(13.75f, 4.75f, -2.75f), vec3(9.0f, 8.0f, 0.5f));
@@ -507,7 +578,6 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texDoor);
 		Instantiate(nuestroShader, vec3(8.75f, 2.25f, 2.5f), vec3(0.1f, 2.0f, 3.0f), 90.0f, vec3(1.0f, 0.0f, 0.0f));
 
-
 #pragma endregion
 
 #pragma region CANTINA
@@ -523,7 +593,7 @@ int main() {
 		Instantiate(nuestroShader, vec3(-8.5f, 4.75f, -2.75f), vec3(0.5f, 8.0f, 5.0f));
 		Instantiate(nuestroShader, vec3(-8.5f, 6.75f, 1.5f), vec3(0.5f, 4.0f, 3.5f));
 		Instantiate(nuestroShader, vec3(-13.25f, 8.0f, 1.5f), vec3(9.0f, 0.5f, 12.5f)); //Techo
-		
+
 		glBindTexture(GL_TEXTURE_2D, texWood2);
 		Instantiate(nuestroShader, vec3(-9.25f, 2.5f, 2.5f), vec3(0.1f, 2.0f, 2.0f), 35.0f, vec3(0.0f, 1.0f, 0.0f));
 		Instantiate(nuestroShader, vec3(-9.25f, 2.5f, 0.5f), vec3(0.1f, 2.0f, 2.0f), -35.0f, vec3(0.0f, 1.0f, 0.0f));
@@ -600,7 +670,7 @@ int main() {
 		Instantiate(nuestroShader, vec3(-0.0f, 8.25f, 28.0f), vec3(19.0f, 15.0f, 0.5f));
 
 #pragma endregion
-		
+
 #pragma region POZO
 		glBindTexture(GL_TEXTURE_2D, texStone2);
 		Instantiate(nuestroShader, vec3(1.0f, 1.25f, -6.75f), vec3(0.25f, 1.5f, 2.25f));
@@ -635,20 +705,23 @@ int main() {
 		Instantiate(nuestroShader, vec3(8.75f, 3.0f, -2.5f), vec3(0.1f, 1.0f, 2.0f), -90.0f, vec3(1.0f, 0.0f, 0.0f)); //Lateral
 		Instantiate(nuestroShader, vec3(-3.5f, 3.0f, 12.25f), vec3(1.0f, 2.0f, 0.1f), 180.0f, vec3(0.0f, 0.0f, 1.0f)); //Frente
 		Instantiate(nuestroShader, vec3(-8.25f, 3.0f, -1.0f), vec3(0.1f, 1.0f, 2.0f), -90.0f, vec3(1.0f, 0.0f, 0.0f)); //Lateral
-		
 #pragma endregion
+
+		//renderizar luz
+		glBindVertexArray(VAO2);
+		glDrawElements(GL_TRIANGLES, 50, GL_UNSIGNED_INT, 0);
 
 		//Dibujamos el skybox
 		// Función de profundidad encargada del cálculo entre el usuario y la profundidad del skybox para generación de infinidad
 		glDepthFunc(GL_LEQUAL);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		skyboxShader.use();
 		view = mat4(mat3(camera.GetViewMatrix()));
 		skyboxShader.setMat4("view", view);
 		skyboxShader.setMat4("projection", projection);
 
 		glBindVertexArray(sVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS);
@@ -659,21 +732,22 @@ int main() {
 	}
 
 	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &VAO2);
 	glDeleteVertexArrays(1, &sVAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteBuffers(1, &sVBO);
-
 	glfwTerminate();
 	return 0;
 }
+
 //Instancía un cubo, sin rotación.
 void Instantiate(Shader& _shader, vec3 _position)
 {
 	mat4 model = mat4(1.0f);
 	model = translate(model, _position);
 	_shader.setMat4("model", model);
-	glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, cubeVertexNum, GL_UNSIGNED_INT, 0);
 }
 
 //Instanciar con una escala
@@ -683,7 +757,7 @@ void Instantiate(Shader& _shader, vec3 _position, vec3 _scale)
 	model = translate(model, _position);
 	model = scale(model, _scale);
 	_shader.setMat4("model", model);
-	glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, cubeVertexNum, GL_UNSIGNED_INT, 0);
 }
 
 //Instancia un cubo, con la rotación indicada 
@@ -693,7 +767,7 @@ void Instantiate(Shader& _shader, vec3 _position, float _angle, vec3 _axis)
 	model = translate(model, _position);
 	model = rotate(model, radians(_angle), _axis);
 	_shader.setMat4("model", model);
-	glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, cubeVertexNum, GL_UNSIGNED_INT, 0);
 }
 
 //Instancia un cubo, con escala y rotación indicadas 
@@ -704,8 +778,9 @@ void Instantiate(Shader& _shader, vec3 _position, vec3 _scale, float _angle, vec
 	model = rotate(model, radians(_angle), _axis);
 	model = scale(model, _scale);
 	_shader.setMat4("model", model);
-	glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, cubeVertexNum, GL_UNSIGNED_INT, 0);
 }
+
 
 void processInput(GLFWwindow* window)
 {
@@ -732,27 +807,27 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
-		lastX = xPos;
-		lastY = yPos;
+		lastX = xpos;
+		lastY = ypos;
 		firstMouse = false;
 	}
 
-	float xOffset = xPos - lastX;
-	float yOffset = lastY - yPos;
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos;
 
-	lastX = xPos;
-	lastY = yPos;
+	lastX = xpos;
+	lastY = ypos;
 
-	camera.ProcessMouseMovement(xOffset, yOffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yOffset);
+	camera.ProcessMouseScroll(yoffset);
 }
 
 unsigned int LoadTexture(const char* path)
@@ -804,12 +879,13 @@ unsigned int LoadCubeMap(vector<string> faces)
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
 		}
 		else
 		{
 			cout << "fallo en cargar las texturas de nuestro skybox, la textura que fallo es: " << faces[i] << endl;
+			stbi_image_free(data);
 		}
-		stbi_image_free(data);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -58,6 +58,8 @@ unsigned int texBricks, texMetal, texGrass, texWood, texWhiteWood, texWool, texW
 //Punto donde estará posicionada nuestra luz
 vec3 posLuz(0.0f, 2.0f, 0.0f);
 
+float tempCoord = 0.0f;
+
 int main() {
 	//inicializar glfw
 	glfwInit();
